@@ -1,0 +1,73 @@
+name: Terraform Module Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Git
+      - name: Set up Git
+        run: |
+          git config --global user.name "distro"
+          git config --global user.email "distro@s-its.com"
+
+      # Step 3: Read Initial Version from version.txt
+      - name: Read Initial Version
+        id: read_version
+        run: |
+          if [ ! -f version.txt ]; then
+            echo "version.txt not found, creating default version v0.0.0"
+            echo "v0.0.0" > version.txt
+          fi
+          current_version=$(cat version.txt)
+          echo "Current version: $current_version"
+          echo "current_version=$current_version" >> $GITHUB_ENV
+
+      # Step 4: Increment Version Tag
+      - name: Increment Tag
+        id: increment_tag
+        run: |
+          current_version=${{ env.current_version }}
+      
+          # Extract major, minor, patch versions
+          major=$(echo $current_version | cut -d. -f1 | tr -d v)
+          minor=$(echo $current_version | cut -d. -f2)
+          patch=$(echo $current_version | cut -d. -f3)
+      
+          # Increment patch version
+          new_patch=$((patch + 1))
+          new_tag="v$major.$minor.$new_patch"
+      
+          echo "New tag: $new_tag"
+          echo "new_tag=$new_tag" >> $GITHUB_ENV
+
+      # Step 5: Update version.txt with New Tag
+      - name: Update version.txt
+        run: |
+          echo "${{ env.new_tag }}" > version.txt
+          git add version.txt
+          git commit -m "Update version to ${{ env.new_tag }}"
+          git push origin master
+
+      # Step 6: Create and Push New Tag
+      - name: Create and Push Tag
+        run: |
+          git tag ${{ env.new_tag }}
+          git push origin ${{ env.new_tag }}
+
+      # Step 7: Publish GitHub Release (Optional)
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.new_tag }}
+          release_name: "Release ${{ env.new_tag }}"
+          body: "This release includes the latest updates to the Terraform module."
+          draft: false
+          prerelease: false
