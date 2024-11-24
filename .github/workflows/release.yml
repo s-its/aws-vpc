@@ -74,3 +74,5 @@ jobs:
           body: "This release includes the latest updates to the Terraform module."
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
