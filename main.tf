@@ -124,13 +124,13 @@ resource "aws_subnet" "private" {
 
 # There are as many routing tables as the number of NAT gateways
 resource "aws_route_table" "private" {
-  count = local.create_private_subnets && local.max_subnet_length > 0 ? local.nat_gateway_count : 0
+  count = local.create_private_subnets && local.max_subnet_length > 0 ? local.len_private_subnets : 0
 
   vpc_id = local.vpc_id
 
   tags = merge(
     {
-      "Name" = var.single_nat_gateway ? "${var.name}-${var.private_subnet_suffix}" : format(
+      "Name" = format(
         "${var.name}-${var.private_subnet_suffix}-%s",
         element(var.azs, count.index),
       )
@@ -202,7 +202,7 @@ resource "aws_nat_gateway" "this" {
 }
 
 resource "aws_route" "private_nat_gateway" {
-  count = var.enable_nat_gateway ? local.nat_gateway_count : 0
+  count = var.enable_nat_gateway ? local.len_private_subnets : 0
 
   route_table_id         = element(aws_route_table.private[*].id, count.index)
   destination_cidr_block = var.nat_gateway_destination_cidr_block
