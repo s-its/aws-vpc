@@ -5,17 +5,17 @@
 
 output "vpc_id" {
   description = "The ID of the VPC"
-  value       = try(aws_vpc.main[0].id, null)
+  value       = aws_vpc.main.id
 }
 
 output "vpc_arn" {
   description = "The ARN of the VPC"
-  value       = try(aws_vpc.main[0].arn, null)
+  value       = aws_vpc.main.arn
 }
 
 output "vpc_cidr_block" {
   description = "The CIDR block of the VPC"
-  value       = try(aws_vpc.main[0].cidr_block, null)
+  value       = aws_vpc.main.cidr_block
 }
 
 
@@ -25,12 +25,12 @@ output "vpc_cidr_block" {
 
 output "igw_id" {
   description = "The ID of the Internet Gateway"
-  value       = try(aws_internet_gateway.main[0].id, null)
+  value       = aws_internet_gateway.main.id
 }
 
 output "igw_arn" {
   description = "The ARN of the Internet Gateway"
-  value       = try(aws_internet_gateway.main[0].arn, null)
+  value       = aws_internet_gateway.main.arn
 }
 
 ################################################################################

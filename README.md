@@ -5,7 +5,7 @@ Terraform module which creates VPC resources on AWS.
 
 ```hcl
 module "vpc" {
-  source = "git::https://github.com/s-its/aws-vpc.git?ref=v1.0.1"
+  source = "git::https://github.com/s-its/aws-vpc.git?ref=v1.0.3"
   name = "my-vpc"
   ipv4_cidr = "10.0.0.0/16"
 
